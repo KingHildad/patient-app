@@ -1,14 +1,4 @@
-# Patient Vitals & Assessment App
 
-A patient management web app built for the IntelliSOFT technical assessment: register a patient, record vitals, complete a BMI-driven assessment, and browse the patient list.
-
-Built with plain HTML, CSS, and JavaScript on the frontend (no framework) and PHP + MySQL on the backend (no framework), run locally under XAMPP.
-
-## Approach
-
-The brief allowed either consuming the provided Postman API or building a new backend. This project builds its own PHP/MySQL backend — see `backend/` for the API endpoints and `backend/schema.sql` for the database schema.
-
-## Structure
 
 ## Setup & running it (XAMPP)
 
