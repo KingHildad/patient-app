@@ -1,23 +1,24 @@
+"use strict";
+
 /**
- * API service layer.
+ * API service layer — talks to the PHP/MySQL backend in backend/api/.
  *
- * TODO: once the Postman collection is exported, replace BASE_URL, the
- * endpoint paths below, and the request/response shapes to match it exactly.
- * Every function here already gets called at the right point in the flow
- * (see app.js) — this file is the only one that should need to change.
+ * This is the only file that should need to change to point the app at a
+ * different backend location.
  *
- * Assessment doc + Postman overview confirm:
- *   - dev base URL:  http://localhost:8181/api
- *   - prod base URL: https://patientvisitapis.intellisoftkenya.com/api
- *   - auth: Laravel Sanctum bearer token (endpoint TBD from collection)
+ * How this maps to XAMPP:
+ *   - The whole `backend/` folder lives inside XAMPP's htdocs, e.g.
+ *     C:\xampp\htdocs\patient-app\backend
+ *     or /Applications/XAMPP/xamppfiles/htdocs/patient-app/backend
+ *   - backend/schema.sql has been imported once via phpMyAdmin.
+ *   - baseUrl below is the *folder* Apache serves that backend/api/ from —
+ *     no filename on the end. Each function below appends its own
+ *     endpoint filename (/patients.php, /vitals.php, /visits.php).
  */
 
 const API_CONFIG = {
-  baseUrl: "http://localhost/patient-app/backend/api/patients.php",
-  authToken: null, // TODO: set after wiring a login/token endpoint, if one exists
-  // Flip to true once BASE_URL + endpoints below are confirmed against the
-  // real collection. While false, the app runs entirely on local state so
-  // the UI/flow can be built and demoed before the backend is wired in.
+  baseUrl: "http://localhost/patient-app/backend/api",
+  authToken: null, // not needed — this backend has no auth layer
   enabled: true,
 };
 
@@ -34,27 +35,29 @@ async function apiRequest(path, options = {}) {
 }
 
 const api = {
-  /** POST /patients — TODO confirm path + field names against the collection */
+  /** POST /patients.php — register a new patient */
   async registerPatient(patient) {
     if (!API_CONFIG.enabled) return { ...patient, _local: true };
-    return apiRequest("/patients", { method: "POST", body: JSON.stringify(patient) });
+    return apiRequest("/patients.php", { method: "POST", body: JSON.stringify(patient) });
   },
 
-  /** POST /vitals — TODO confirm path + field names against the collection */
+  /** POST /vitals.php — record height/weight for a visit; server computes BMI */
   async submitVitals(vitals) {
     if (!API_CONFIG.enabled) return { ...vitals, _local: true };
-    return apiRequest("/vitals", { method: "POST", body: JSON.stringify(vitals) });
+    return apiRequest("/vitals.php", { method: "POST", body: JSON.stringify(vitals) });
   },
 
-  /** POST /visits — TODO confirm path + field names against the collection */
+  /** POST /visits.php — record the general/overweight assessment form */
   async submitVisitForm(visitForm) {
     if (!API_CONFIG.enabled) return { ...visitForm, _local: true };
-    return apiRequest("/visits", { method: "POST", body: JSON.stringify(visitForm) });
+    return apiRequest("/visits.php", { method: "POST", body: JSON.stringify(visitForm) });
   },
 
-  /** GET /patients — used to render the listing screen, TODO confirm path */
+  /** GET /patients.php — not currently called by app.js, which renders the
+   *  listing from local state for speed; available if you'd rather have
+   *  the listing screen fetch live from the server instead. */
   async listPatients() {
-    if (!API_CONFIG.enabled) return null; // app.js falls back to local state
-    return apiRequest("/patients", { method: "GET" });
+    if (!API_CONFIG.enabled) return null;
+    return apiRequest("/patients.php", { method: "GET" });
   },
 };
