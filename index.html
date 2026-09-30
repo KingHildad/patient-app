@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Patient Vitals &amp; Assessment</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+
+<header class="app-bar">
+  <div class="app-bar__title">
+    <span class="app-bar__mark">PV</span>
+    <div>
+      <h1>Patient Vitals &amp; Assessment</h1>
+      <p class="app-bar__sub">Registration &middot; Vitals &middot; Assessment &middot; Listing</p>
+    </div>
+  </div>
+  <div class="app-bar__patient" id="activePatientBadge" hidden>
+    <span class="dot" id="activePatientDot"></span>
+    <span id="activePatientName"></span>
+  </div>
+</header>
+
+<nav class="stepper" aria-label="Workflow steps">
+  <button class="step" data-step="registration" data-step-index="1">
+    <span class="step__index">1</span>
+    <span class="step__label">Register</span>
+  </button>
+  <button class="step" data-step="vitals" data-step-index="2">
+    <span class="step__index">2</span>
+    <span class="step__label">Vitals</span>
+  </button>
+  <button class="step" data-step="assessment" data-step-index="3">
+    <span class="step__index">3</span>
+    <span class="step__label">Assessment</span>
+  </button>
+  <button class="step" data-step="listing" data-step-index="4">
+    <span class="step__index">4</span>
+    <span class="step__label">Patients</span>
+  </button>
+</nav>
+
+<main class="screen-wrap">
+
+  <!-- 1. PATIENT REGISTRATION -->
+  <section class="screen" id="screen-registration" data-screen>
+    <div class="card">
+      <div class="card__head">
+        <h2>Patient registration</h2>
+        <p>Every patient needs a unique ID before vitals can be recorded.</p>
+      </div>
+      <form id="form-registration" novalidate>
+        <div class="field">
+          <label for="reg-patientId">Patient ID</label>
+          <input type="text" id="reg-patientId" name="patientId" required autocomplete="off">
+          <p class="field__error" data-error-for="reg-patientId"></p>
+        </div>
+        <div class="field-row">
+          <div class="field">
+            <label for="reg-firstName">First name</label>
+            <input type="text" id="reg-firstName" name="firstName" required>
+            <p class="field__error" data-error-for="reg-firstName"></p>
+          </div>
+          <div class="field">
+            <label for="reg-lastName">Last name</label>
+            <input type="text" id="reg-lastName" name="lastName" required>
+            <p class="field__error" data-error-for="reg-lastName"></p>
+          </div>
+        </div>
+        <div class="field-row">
+          <div class="field">
+            <label for="reg-dob">Date of birth</label>
+            <input type="date" id="reg-dob" name="dob" required>
+            <p class="field__error" data-error-for="reg-dob"></p>
+          </div>
+          <div class="field">
+            <label for="reg-gender">Gender</label>
+            <select id="reg-gender" name="gender" required>
+              <option value="" disabled selected>Select&hellip;</option>
+              <option value="Male">Male</option>
+              <option value="Female">Female</option>
+            </select>
+            <p class="field__error" data-error-for="reg-gender"></p>
+          </div>
+        </div>
+        <div class="field">
+          <label for="reg-date">Registration date</label>
+          <input type="date" id="reg-date" name="registrationDate" required>
+          <p class="field__error" data-error-for="reg-date"></p>
+        </div>
+        <div class="form-actions">
+          <button type="reset" class="btn btn--ghost">Clear</button>
+          <button type="submit" class="btn btn--primary">Save &amp; continue to vitals</button>
+        </div>
+      </form>
+    </div>
+  </section>
+
+  <!-- 2. VITALS -->
+  <section class="screen" id="screen-vitals" data-screen hidden>
+    <div class="card">
+      <div class="card__head">
+        <h2>Patient vitals</h2>
+        <p>BMI is calculated automatically and decides which assessment form follows.</p>
+      </div>
+      <form id="form-vitals" novalidate>
+        <div class="field-row">
+          <div class="field">
+            <label for="vit-patientName">Patient</label>
+            <input type="text" id="vit-patientName" disabled>
+          </div>
+          <div class="field">
+            <label for="vit-visitDate">Visit date</label>
+            <input type="date" id="vit-visitDate" name="visitDate" required>
+            <p class="field__error" data-error-for="vit-visitDate"></p>
+          </div>
+        </div>
+        <div class="field-row">
+          <div class="field">
+            <label for="vit-height">Height (cm)</label>
+            <input type="number" id="vit-height" name="height" min="30" max="250" step="0.1" required>
+            <p class="field__error" data-error-for="vit-height"></p>
+          </div>
+          <div class="field">
+            <label for="vit-weight">Weight (kg)</label>
+            <input type="number" id="vit-weight" name="weight" min="2" max="400" step="0.1" required>
+            <p class="field__error" data-error-for="vit-weight"></p>
+          </div>
+        </div>
+        <div class="field field--result">
+          <label>BMI</label>
+          <div class="bmi-readout">
+            <span id="vit-bmiValue">&mdash;</span>
+            <span class="status-pill" id="vit-bmiStatus" hidden></span>
+          </div>
+        </div>
+        <div class="form-actions">
+          <button type="button" class="btn btn--ghost" data-nav="registration">Back</button>
+          <button type="submit" class="btn btn--primary">Save &amp; continue</button>
+        </div>
+      </form>
+    </div>
+  </section>
+
+  <!-- 3a. OVERWEIGHT ASSESSMENT (BMI > 25) -->
+  <section class="screen" id="screen-assessment-overweight" data-screen hidden>
+    <div class="card">
+      <div class="card__head">
+        <h2>Overweight assessment</h2>
+        <p>Shown because this visit's BMI is above 25.</p>
+      </div>
+      <form id="form-overweight" novalidate>
+        <div class="field-row">
+          <div class="field">
+            <label for="ow-patientName">Patient</label>
+            <input type="text" id="ow-patientName" disabled>
+          </div>
+          <div class="field">
+            <label for="ow-visitDate">Visit date</label>
+            <input type="date" id="ow-visitDate" disabled>
+          </div>
+        </div>
+        <div class="field">
+          <label>General health</label>
+          <div class="radio-group" role="radiogroup" aria-label="General health">
+            <label class="radio"><input type="radio" name="generalHealth" value="Good" required> Good</label>
+            <label class="radio"><input type="radio" name="generalHealth" value="Poor"> Poor</label>
+          </div>
+          <p class="field__error" data-error-for="ow-generalHealth"></p>
+        </div>
+        <div class="field">
+          <label>Have you ever been on a diet to lose weight?</label>
+          <div class="radio-group" role="radiogroup" aria-label="Diet history">
+            <label class="radio"><input type="radio" name="dietHistory" value="Yes" required> Yes</label>
+            <label class="radio"><input type="radio" name="dietHistory" value="No"> No</label>
+          </div>
+          <p class="field__error" data-error-for="ow-dietHistory"></p>
+        </div>
+        <div class="field">
+          <label for="ow-comments">Comments</label>
+          <textarea id="ow-comments" name="comments" rows="3" required></textarea>
+          <p class="field__error" data-error-for="ow-comments"></p>
+        </div>
+        <div class="form-actions">
+          <button type="button" class="btn btn--ghost" data-nav="vitals">Back</button>
+          <button type="submit" class="btn btn--primary">Save &amp; view patients</button>
+        </div>
+      </form>
+    </div>
+  </section>
+
+  <!-- 3b. GENERAL ASSESSMENT (BMI <= 25) -->
+  <section class="screen" id="screen-assessment-general" data-screen hidden>
+    <div class="card">
+      <div class="card__head">
+        <h2>General assessment</h2>
+        <p>Shown because this visit's BMI is 25 or below.</p>
+      </div>
+      <form id="form-general" novalidate>
+        <div class="field-row">
+          <div class="field">
+            <label for="gen-patientName">Patient</label>
+            <input type="text" id="gen-patientName" disabled>
+          </div>
+          <div class="field">
+            <label for="gen-visitDate">Visit date</label>
+            <input type="date" id="gen-visitDate" disabled>
+          </div>
+        </div>
+        <div class="field">
+          <label>General health</label>
+          <div class="radio-group" role="radiogroup" aria-label="General health">
+            <label class="radio"><input type="radio" name="generalHealth" value="Good" required> Good</label>
+            <label class="radio"><input type="radio" name="generalHealth" value="Poor"> Poor</label>
+          </div>
+          <p class="field__error" data-error-for="gen-generalHealth"></p>
+        </div>
+        <div class="field">
+          <label>Are you currently using any drugs?</label>
+          <div class="radio-group" role="radiogroup" aria-label="Drug use">
+            <label class="radio"><input type="radio" name="drugUse" value="Yes" required> Yes</label>
+            <label class="radio"><input type="radio" name="drugUse" value="No"> No</label>
+          </div>
+          <p class="field__error" data-error-for="gen-drugUse"></p>
+        </div>
+        <div class="field">
+          <label for="gen-comments">Comments</label>
+          <textarea id="gen-comments" name="comments" rows="3" required></textarea>
+          <p class="field__error" data-error-for="gen-comments"></p>
+        </div>
+        <div class="form-actions">
+          <button type="button" class="btn btn--ghost" data-nav="vitals">Back</button>
+          <button type="submit" class="btn btn--primary">Save &amp; view patients</button>
+        </div>
+      </form>
+    </div>
+  </section>
+
+  <!-- 4. PATIENT LISTING -->
+  <section class="screen" id="screen-listing" data-screen hidden>
+    <div class="card card--wide">
+      <div class="card__head card__head--row">
+        <div>
+          <h2>Patients</h2>
+          <p>Every registered patient and their most recent assessment.</p>
+        </div>
+        <div class="field field--inline">
+          <label for="list-dateFilter">Filter by visit date</label>
+          <input type="date" id="list-dateFilter">
+          <button type="button" class="btn btn--ghost btn--small" id="list-clearFilter">Clear</button>
+        </div>
+      </div>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Patient name</th>
+              <th>Age</th>
+              <th>BMI status</th>
+              <th>Last assessment date</th>
+            </tr>
+          </thead>
+          <tbody id="list-tbody">
+            <!-- rows injected by js/app.js -->
+          </tbody>
+        </table>
+        <p class="empty-state" id="list-empty" hidden>No patients match this date yet.</p>
+      </div>
+
+      <div class="form-actions form-actions--start">
+        <button type="button" class="btn btn--primary" data-nav="registration">+ Register another patient</button>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
+
+<script src="js/api.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>
