@@ -1,49 +1,35 @@
-# Patient Vitals & Assessment — Frontend
+# Patient Vitals & Assessment App
 
-Web app for the IntelliSOFT technical assessment. Built with plain HTML, CSS and JavaScript (no framework/build step).
+A patient management web app built for the IntelliSOFT technical assessment: register a patient, record vitals, complete a BMI-driven assessment, and browse the patient list.
+
+Built with plain HTML, CSS, and JavaScript on the frontend (no framework) and PHP + MySQL on the backend (no framework), run locally under XAMPP.
 
 ## Approach
 
-Building our own backend (PHP + MySQL, run under XAMPP) rather than consuming IntelliSOFT's API. See `backend/` for the PHP endpoints and `backend/schema.sql` for the database.
+The brief allowed either consuming the provided Postman API or building a new backend. This project builds its own PHP/MySQL backend — see `backend/` for the API endpoints and `backend/schema.sql` for the database schema.
 
 ## Structure
 
-```
-index.html         All 5 screens (registration, vitals, overweight/general assessment, listing)
-css/styles.css      Styling
-js/api.js           Calls the PHP backend below
-js/app.js           State, navigation, validation, BMI logic, listing/filtering
-backend/schema.sql  MySQL schema — import this once
-backend/api/
-  config.php        DB connection + CORS/JSON helpers
-  patients.php      POST register a patient, GET list patients
-  vitals.php        POST record vitals for a visit (server computes/stores BMI too)
-  visits.php        POST record a general/overweight assessment
-```
+## Setup & running it (XAMPP)
 
-## Run it — XAMPP setup
-
-1. Start Apache and MySQL in the XAMPP control panel.
+1. Start **Apache** and **MySQL** in the XAMPP Control Panel.
 2. Copy the whole `backend/` folder into your XAMPP `htdocs`, e.g.
    `C:\xampp\htdocs\patient-app\backend` (Windows) or
    `/Applications/XAMPP/xamppfiles/htdocs/patient-app/backend` (Mac).
-3. Open **phpMyAdmin** → Import → select `backend/schema.sql`. This creates the
-   `patient_app` database and its three tables.
-4. Confirm the API responds: visit `http://localhost/patient-app/backend/api/patients.php`
-   in a browser — you should see `[]`.
-5. In `js/api.js`, set `API_CONFIG.baseUrl` to match step 4, e.g.
-   `http://localhost/patient-app/backend/api`, and leave `enabled: true`.
-6. Open `index.html` via VS Code **Live Server** (or `python3 -m http.server`)
-   — as its own static site, separate from the XAMPP URL. The API's CORS
-   headers already allow that.
+3. Open **phpMyAdmin** → Import → select `backend/schema.sql`. This creates the `patient_app` database and its three tables (`patients`, `vitals`, `visit_forms`).
+4. Confirm the API responds: visit `http://localhost/patient-app/backend/api/patients.php` in a browser — you should see `{"data":[]}`.
+5. In `js/api.js`, confirm `API_CONFIG.baseUrl` matches step 4 (`http://localhost/patient-app/backend/api`) and `enabled` is `true`.
+6. Open `index.html` via VS Code **Live Server** (or `python3 -m http.server`) as its own static site, separate from the XAMPP URL — the API's CORS headers already allow cross-origin requests.
 
 ## Flow
 
-1. **Register** a patient (unique patient ID enforced client-side).
+1. **Register** a patient (unique patient ID enforced both client-side and by the database).
 2. **Vitals** — height/weight entered, BMI calculated automatically.
-3. Saving vitals routes to the **General** assessment (BMI &le; 25) or **Overweight** assessment (BMI &gt; 25).
+3. Saving vitals routes to the **General** assessment (BMI ≤ 25) or **Overweight** assessment (BMI > 25).
 4. Saving the assessment lands on the **Patient listing**, filterable by visit date, showing each patient's age and BMI status (Underweight / Normal / Overweight).
 
-## Note on the BMI-25 boundary
+## Design notes
 
-The brief states the vitals step routes at "BMI &le; 25 &rarr; General, BMI &gt; 25 &rarr; Overweight," while the listing step defines status as "Normal &lt; 25, Overweight &ge; 25." Both are implemented literally as written in their respective sections (see comment in `js/app.js`) rather than silently merged into one rule.
+- **Resilient by design**: every form submission also calls the backend API. If the server is unreachable, the app falls back to local state (`localStorage`) and notifies the user, rather than losing data.
+- **Duplicate prevention at two layers**: checked client-side for instant feedback, and enforced by a `UNIQUE(patient_id, visit_date)` constraint in MySQL so it holds even for direct API calls.
+- **BMI-25 boundary**: the brief defines the cutoff slightly differently in two places — the vitals step routes at "BMI ≤ 25 → General, BMI > 25 → Overweight," while the listing step defines status as "Normal < 25, Overweight ≥ 25." Both are implemented literally as written in their respective sections (see the comment above `routeForBmi()` and `bmiStatusLabel()` in `js/app.js`) rather than silently merged into one rule.
